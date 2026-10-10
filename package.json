@@ -1,0 +1,21 @@
+{
+  "name": "chatbot-pmb",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts"
+  },
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "^1.4.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "grammy": "^1.46.0",
+    "hono": "^4.13.13",
+    "mammoth": "^1.13.0",
+    "unpdf": "^1.8.1"
+  }
+}

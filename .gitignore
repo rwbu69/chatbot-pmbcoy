@@ -1,0 +1,6 @@
+node_modules/
+data/
+.env
+src/eval.ts
+test-diag.ts
+.DS_Store
