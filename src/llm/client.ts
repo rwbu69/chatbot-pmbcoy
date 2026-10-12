@@ -2,11 +2,16 @@ export class LLMClient {
   private baseUrl: string;
   private apiKey: string;
   public model: string;
+  public embeddingModel: string;
 
   constructor() {
-    this.baseUrl = process.env.LLM_BASE_URL || "https://api.openai.com/v1";
-    this.apiKey = process.env.LLM_API_KEY || "";
-    this.model = process.env.LLM_MODEL || "gpt-4o-mini";
+    let rawBase = process.env.LLM_BASE_URL || "https://api.openai.com/v1";
+    // Normalize baseUrl: remove trailing slash and remove /chat/completions if mistakenly included
+    rawBase = rawBase.trim().replace(/\/+$/, "").replace(/\/chat\/completions$/, "");
+    this.baseUrl = rawBase;
+    this.apiKey = (process.env.LLM_API_KEY || "").trim();
+    this.model = (process.env.LLM_MODEL || "gpt-4o-mini").trim();
+    this.embeddingModel = (process.env.EMBEDDING_MODEL || "text-embedding-3-small").trim();
   }
 
   async generateEmbedding(text: string): Promise<number[]> {
@@ -25,12 +30,13 @@ export class LLMClient {
       },
       body: JSON.stringify({
         input: text,
-        model: "text-embedding-3-small" // Adjust according to provider (e.g. text-embedding-004 for Gemini)
+        model: this.embeddingModel
       })
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to generate embedding: ${await response.text()}`);
+      const errText = await response.text();
+      throw new Error(`Failed to generate embedding (${response.status} ${response.statusText}): ${errText || "Empty response body"}`);
     }
 
     const data = (await response.json()) as any;
@@ -59,7 +65,8 @@ export class LLMClient {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to generate chat completion: ${await response.text()}`);
+      const errText = await response.text();
+      throw new Error(`Failed to generate chat completion (${response.status} ${response.statusText}): ${errText || "Empty response body"}`);
     }
 
     const data = (await response.json()) as any;

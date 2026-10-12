@@ -226,6 +226,7 @@ adminApp.post('/upload', async (c) => {
 // Aksi Hapus Dokumen
 adminApp.delete('/document/:id', (c) => {
   const id = c.req.param('id');
+  db.query("DELETE FROM chunks WHERE document_id = $id").run({ $id: id });
   db.query("DELETE FROM documents WHERE id = $id").run({ $id: id });
   return c.text(""); // Mengembalikan string kosong untuk menghapus baris via HTMX
 });

@@ -2,6 +2,7 @@ import { db } from "../db/schema";
 import { llm } from "../llm/client";
 
 function cosineSimilarity(vecA: Float32Array, vecB: Float32Array): number {
+  if (vecA.length !== vecB.length || vecA.length === 0) return 0;
   let dotProduct = 0;
   let normA = 0;
   let normB = 0;
@@ -11,7 +12,8 @@ function cosineSimilarity(vecA: Float32Array, vecB: Float32Array): number {
     normB += vecB[i] * vecB[i];
   }
   if (normA === 0 || normB === 0) return 0;
-  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+  const sim = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+  return isNaN(sim) ? 0 : sim;
 }
 
 export async function retrieveContext(query: string, topK = 3) {
